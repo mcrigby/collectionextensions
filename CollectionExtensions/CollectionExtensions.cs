@@ -46,6 +46,23 @@ namespace System.Collections.Generic
                   "however can't use it in .NET standard yet. When it's added, please remove this method")]
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = null) => new HashSet<T>(source, comparer);
 #endif
+
+        public static IEnumerable<TResult> TrySelect<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        {
+            foreach (var item in source)
+            {
+                TResult result;
+                try
+                {
+                    result = selector(item);
+                }
+                catch
+                {
+                    result = default;
+                }
+                yield return result;
+            }
+        }
     }
 }
 
@@ -78,6 +95,14 @@ namespace System.Linq
                 .Aggregate(result, (current, lambdaExpression) => current.ThenBy(lambdaExpression));
 
             return result;
+        }
+
+        public static bool Exists<TResult>(this IQueryable<TResult> source, Expression<Func<TResult, bool>> predicate)
+        {
+            if (source.FirstOrDefault(predicate) == null)
+                return false;
+
+            return true;
         }
     }
 }
