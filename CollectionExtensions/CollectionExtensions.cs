@@ -86,23 +86,14 @@ namespace System.Linq
                     Expression.Lambda<Func<TEntity, IComparable>>(convertedExpression, parameter))
                 .ToArray();
 
-            var first = lambdaExpressions.FirstOrDefault();
-            if (first == default(LambdaExpression))
-                return source.OrderBy(x => 0);
-
-            var result = source.OrderBy(first);
-            result = lambdaExpressions.Skip(1)
+            var result = source.OrderBy(x => 0);
+            result = lambdaExpressions
                 .Aggregate(result, (current, lambdaExpression) => current.ThenBy(lambdaExpression));
 
             return result;
         }
 
-        public static bool Exists<TResult>(this IQueryable<TResult> source, Expression<Func<TResult, bool>> predicate)
-        {
-            if (source.FirstOrDefault(predicate) == null)
-                return false;
-
-            return true;
-        }
+        public static bool Exists<TResult>(this IQueryable<TResult> source, Expression<Func<TResult, bool>> predicate) =>
+            source.Any(predicate);
     }
 }
