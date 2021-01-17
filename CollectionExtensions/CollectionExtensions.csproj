@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netstandard2.0;netcoreapp3.1;net5.0</TargetFrameworks>
     <AssemblyName>CutilloRigby.Extensions.Collections</AssemblyName>
     <RootNamespace>CutilloRigby.Extensions.Collections</RootNamespace>
     <PackageId>CutilloRigby.Extensions.Collections</PackageId>
     <Authors>Martin Cutillo-Rigby</Authors>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <Company>Martin Cutillo-Rigby</Company>
     <Product>CutilloRigby.Extensions.EFCore</Product>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Description>Collection Extension Methods</Description>
     <Copyright>Martin Cutillo-Rigby 2020</Copyright>
     <IsPackable>true</IsPackable>
