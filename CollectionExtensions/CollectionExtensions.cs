@@ -29,23 +29,13 @@ namespace System.Collections.Generic
 
             var leftListKeys = leftList
                 .Select(outerKeySelector)
-#if NETSTANDARD2_0
                 .ToHashSet();
-#else
-                .ToHashSet();
-#endif
 
             return leftList.LeftJoin(rightList, outerKeySelector, innerKeySelector, resultSelector)
                 .Concat(rightList
                     .Where(right => !leftListKeys.Contains(innerKeySelector(right)))
                     .Select(right => resultSelector(default, right)));
         }
-
-#if NETSTANDARD2_0
-        [Obsolete("In the .NET framework and in NET core this method is available, " +
-                  "however can't use it in .NET standard yet. When it's added, please remove this method")]
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = null) => new HashSet<T>(source, comparer);
-#endif
 
         public static IEnumerable<TResult> TrySelect<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
