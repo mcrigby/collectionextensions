@@ -60,27 +60,65 @@ namespace System.Linq
 {
     public static class Extensions
     {
-        public static IOrderedQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> source, IEnumerable<string> properties)
+        public static IOrderedQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> source, IEnumerable<string> properties, bool descending = false)
         {
-            var entityType = typeof(TEntity);
+            properties ??= Enumerable.Empty<string>();
+
             var iComparableType = typeof(IComparable);
-            var parameter = Expression.Parameter(entityType);
+
+            var entityType = typeof(TEntity);
+            var entityParameter = Expression.Parameter(entityType);
+
             var lambdaExpressions = properties
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .Select(propertyName => entityType.GetProperty(propertyName,
                     BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance))
                 .Where(property => property != null && iComparableType.IsAssignableFrom(property.PropertyType))
-                .Select(filteredProperty => Expression.MakeMemberAccess(parameter, filteredProperty))
-                .Select(memberAccessExpression => Expression.Convert(memberAccessExpression, iComparableType))
+                .Select(filteredProperty => Expression.MakeMemberAccess(entityParameter, filteredProperty))
+                .Select(memberAccessExpression => Expression.Convert(memberAccessExpression, typeof(object)))
                 .Select(convertedExpression =>
-                    Expression.Lambda<Func<TEntity, IComparable>>(convertedExpression, parameter))
+                    Expression.Lambda<Func<TEntity, object>>(convertedExpression, entityParameter))
                 .ToArray();
 
-            var result = source.OrderBy(x => 0);
-            result = lambdaExpressions
-                .Aggregate(result, (current, lambdaExpression) => current.ThenBy(lambdaExpression));
+            if (!descending)
+                return lambdaExpressions
+                    .Aggregate(source.OrderBy(x => 0), (current, lambdaExpression) => current.ThenBy(lambdaExpression));
+            else
+                return lambdaExpressions
+                    .Aggregate(source.OrderByDescending(x => 0), (current, lambdaExpression) => current.ThenByDescending(lambdaExpression));
+        }
 
-            return result;
+        public static IOrderedQueryable<TEntity> OrderBy<TEntity, TNavigationProperty>(this IQueryable<TEntity> source,
+            Expression<Func<TEntity, TNavigationProperty>> navigationProperty, IEnumerable<string> properties, bool descending = false)
+        {
+            properties ??= Enumerable.Empty<string>();
+
+            var iComparableType = typeof(IComparable);
+
+            var entityType = typeof(TEntity);
+            var entityParameter = Expression.Parameter(entityType);
+
+            var navigationProperyType = typeof(TNavigationProperty);
+            var navigationPropertyMemberInfo = ((MemberExpression)navigationProperty.Body).Member;
+            var navigationPropertyParameter = Expression.MakeMemberAccess(entityParameter, navigationPropertyMemberInfo);
+
+            var lambdaExpressions = properties
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .Select(propertyName => navigationProperyType.GetProperty(propertyName,
+                    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance))
+                .Where(property => property != null && iComparableType.IsAssignableFrom(property.PropertyType))
+                .Select(filteredProperty => Expression.MakeMemberAccess(navigationPropertyParameter, filteredProperty))
+                .Select(memberAccessExpression => Expression.Convert(memberAccessExpression, typeof(object)))
+                .Select(convertedExpression =>
+                    Expression.Lambda<Func<TEntity, object>>(convertedExpression, entityParameter))
+                .ToArray();
+
+            if (!descending)
+                return lambdaExpressions
+                    .Aggregate(source.OrderBy(x => 0), (current, lambdaExpression) => current.ThenBy(lambdaExpression));
+            else
+                return lambdaExpressions
+                    .Aggregate(source.OrderByDescending(x => 0), (current, lambdaExpression) => current.ThenByDescending(lambdaExpression));
         }
 
         public static bool Exists<TResult>(this IQueryable<TResult> source, Expression<Func<TResult, bool>> predicate) =>

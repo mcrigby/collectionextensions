@@ -6,13 +6,13 @@
     <RootNamespace>CutilloRigby.Extensions.Collections</RootNamespace>
     <PackageId>CutilloRigby.Extensions.Collections</PackageId>
     <Authors>Martin Cutillo-Rigby</Authors>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
     <Company>Martin Cutillo-Rigby</Company>
     <Product>CutilloRigby.Extensions.EFCore</Product>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Description>Collection Extension Methods</Description>
-    <Copyright>Martin Cutillo-Rigby 2020</Copyright>
+    <Copyright>Martin Cutillo-Rigby 2024</Copyright>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
